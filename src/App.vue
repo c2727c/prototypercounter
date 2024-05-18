@@ -1,22 +1,11 @@
 <script setup lang="ts">
 import CountersArea from "./components/CountersArea.vue";
+import ActionsArea from "./components/ActionsArea.vue";
 </script>
 
 <template>
   <CountersArea />
-</template>
+  <ActionsArea />
+  </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
+
