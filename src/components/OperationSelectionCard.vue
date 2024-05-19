@@ -1,11 +1,10 @@
 <template>
     <div>
         <Dropdown v-model="selectedCounterId" :options="countersReadOnly" optionLabel="name" optionValue="id"
-            placeholder="Select a Counter" class="w-full md:w-14rem" showClear />
+            placeholder="Select a Counter" showClear />
         <Dropdown v-model="selectedOperation" :options="availableOperations" optionLabel="name"
-            placeholder="Select an Operation" class="w-full md:w-14rem"
+            placeholder="Select an Operation"
             @update:modelValue="$emit('update:selectedOperation', index, $event)" />
-
         <Button icon="pi pi-trash" class="p-button-danger" @click="$emit('delete', index)" />
     </div>
 

@@ -1,20 +1,20 @@
 <template>
-  <DoPanel :doableName="displayName" :updateCollapsed="handdleUpdateCollapsed"
+  <DoPanel 
+    style="width: 20em;"
+    :doableName="displayName" :updateCollapsed="handdleUpdateCollapsed"
     @execute-do="$emit('execute-operation', operation)" @execute-delete="$emit('delete-operation', operation.id)">
-    <div class="flex justify-content-center">
-      <InputGroup class="w-full md:w-30rem">
-        <Dropdown v-model="newMathSign" :options="allowedMathSigns.slice()" placeholder="Select a City"
-          class="w-full md:w-14rem" />
+      <InputGroup style="height: 3em; width: 18em;line-height: 1.8em;">
+        <Dropdown style="max-width:4em;"
+        v-model="newMathSign" :options="allowedMathSigns.slice()"/>
         <InputGroupAddon>
           <Button :label="newIsUseConstant ? 'Num' : 'Cnt'" :severity="newIsUseConstant ? 'primary' : 'warning'"
             @click="newIsUseConstant = !newIsUseConstant" />
         </InputGroupAddon>
-        <InputNumber v-if="newIsUseConstant" v-model="newConstant" inputId="minmax-buttons" mode="decimal"
+        <InputNumber v-if="newIsUseConstant" v-model="newConstant" mode="decimal"
           showButtons />
         <Dropdown v-else v-model="newSelectedCounter" editable :options="allCounters" optionLabel="name"
-          optionValue="id" placeholder="Select a Counter" class="w-full md:w-14rem" />
+          optionValue="id" placeholder="Select a Counter"/>
       </InputGroup>
-    </div>
   </DoPanel>
 
 </template>
@@ -76,10 +76,4 @@ const handdleUpdateCollapsed = (collapsed: boolean, newName: string) => {
 };
 </script>
 
-<style scoped>
-.header {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-</style>
+
