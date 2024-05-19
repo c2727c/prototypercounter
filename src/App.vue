@@ -5,9 +5,9 @@ import ActionsArea from "./components/ActionsArea.vue";
 
 <template>
 
-  <div class="flex" style="display: flex; align-items: flex-start;">
-    <CountersArea />
+  <div class="flex" style="display: flex; flex-direction: row; left: 0;">
     <ActionsArea />
+    <CountersArea />
   </div>
   </template>
 

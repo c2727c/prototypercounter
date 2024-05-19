@@ -1,9 +1,11 @@
 <template>
-  <div class="card">
+  <div>
     <Button @click="create">Create Counter</Button>
+    <div class = "area">
     <div v-for="(counter, index) in store.counters" :key="counter.id">
       <CounterCard :counter="counter" :index="index" />
     </div>
+  </div>
   </div>
 </template>
 
@@ -22,7 +24,10 @@ function create() {
 </script>
 
 <style scoped>
-.read-the-docs {
-  color: #888;
+.area {
+  width: 120em;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
 }
 </style>
