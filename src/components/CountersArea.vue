@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <Button @click="create">Create Counter</Button>
-    <div v-for="(counter, index) in store.counters" :key="index">
+    <div v-for="(counter, index) in store.counters" :key="counter.id">
       <CounterCard :counter="counter" :index="index" />
     </div>
   </div>

@@ -8,7 +8,7 @@
  -->
 
 <template>
-  <Card>
+  <Card class="counter-card">
     <template #header>
       <div class="header">
         <Button @click="resetCounter" class="menu-button">↺</Button>
@@ -29,15 +29,16 @@
           <Dialog v-model:visible="isEditAttributes" modal header="Edit Attributes" :style="{ width: '25rem' }">
             <div class="flex align-items-center gap-3 mb-3">
               <label for="minvalue" class="font-semibold w-6rem">Min</label>
-              <InputNumber id="minvalue" class="flex-auto" autocomplete="off" v-model="minValue" />
+              <InputNumber id="minvalue" class="flex-auto" autocomplete="off" v-model="minValue" placeholder="-∞" />
             </div>
             <div class="flex align-items-center gap-3 mb-5">
               <label for="maxvalue" class="font-semibold w-6rem">Max</label>
-              <InputNumber id="maxvalue" class="flex-auto" autocomplete="off" v-model="maxValue" />
+              <InputNumber id="maxvalue" class="flex-auto" autocomplete="off" v-model="maxValue" placeholder="+∞" />
             </div>
             <div class="flex align-items-center gap-3 mb-5">
               <label for="originvalue" class="font-semibold w-6rem">Reset Value</label>
-              <InputNumber id="originvalue" class="flex-auto" autocomplete="off" v-model="originValue" />
+              <InputNumber id="originvalue" class="flex-auto" autocomplete="off" v-model="originValue"
+                placeholder="0" />
             </div>
           </Dialog>
         </div>
@@ -46,7 +47,7 @@
     <template #title>
       <InputGroup v-if="isEditName" class="w-full md:w-30rem">
         <InputText id="countername" v-model="counterName" placeholder="Unnamed" />
-        <Button @click="isEditName = false;storeCounter.name=counterName">💾</Button>
+        <Button @click="isEditName = false; storeCounter.name = counterName">💾</Button>
       </InputGroup>
       <Button v-else @click="isEditName = true" severity="secondary">{{ counterName }} 📝</Button>
     </template>
@@ -60,10 +61,7 @@
       </div>
       <div>
         <OperationCard v-for="(operation, index) in renderedOperations" :key="index" :hostCounterName="counterName"
-          :operation="operation" 
-          @execute-operation="executeOperation"
-          @delete-operation="deleteOperation" 
-          />
+          :operation="operation" @execute-operation="executeOperation" @delete-operation="deleteOperation" />
       </div>
     </template>
   </Card>
@@ -89,9 +87,31 @@ const storeCounter = props.counter; // use this to manipulate the value in the s
 // local refs that are related to the storeCounter
 const counterName = ref(storeCounter.name);
 const renderedOperations = ref<Operation[]>(storeCounter.operations);
-const minValue = ref(-999);
-const maxValue = ref(999);
-const originValue = ref(0);
+const minValue = ref(storeCounter.minValue || null);
+const maxValue = ref(storeCounter.minValue || null);
+const originValue = ref(storeCounter.resetValue || null);
+
+watch(minValue, (newVal) => {
+  if (newVal !== null) {
+    storeCounter.minValue = newVal;
+    if (storeCounter.value < newVal) {
+      storeCounter.value = newVal;
+    }
+  }
+});
+watch(maxValue, (newVal) => {
+  if (newVal !== null) {
+    storeCounter.maxValue = newVal;
+    if (storeCounter.value > newVal) {
+      storeCounter.value = newVal;
+    }
+  }
+});
+watch(originValue, (newVal) => {
+  if (newVal !== null) {
+    storeCounter.resetValue = newVal;
+  }
+});
 
 
 
@@ -109,7 +129,16 @@ const resetCounter = () => {
 };
 
 function addOnCounter(NumberToAdd: number) {
-  storeCounter.value += NumberToAdd;
+  const addOnOperation = {
+    id: "temporaray-id",
+    hostCounter: storeCounter.id,
+    name: `+(${NumberToAdd})`,
+    mathSign: "+",
+    isUseConstant: true,
+    constant: NumberToAdd,
+    selectedCounter: "",
+  };
+  store.executeOperation(addOnOperation);
 }
 
 function executeOperation(operation: Operation) {

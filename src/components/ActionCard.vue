@@ -1,5 +1,5 @@
 <template>
-    <DoPanel :doableName="displayName" :updateCollapsed="handdleUpdateCollapsed"
+    <DoPanel class="action-card" :doableName="displayName" :updateCollapsed="handdleUpdateCollapsed"
       @execute-do="doAction" @execute-delete="deleteAction">
       <div class="flex justify-content-center">
         <div v-for="(operation, index) in editOperations" :key="index">
@@ -81,5 +81,10 @@
     justify-content: space-around;
     align-items: center;
   }
+  .action-card {
+  border: 1px solid #ccc;
+  padding: 1em;
+  margin: 1em 0;
+}
   </style>
   

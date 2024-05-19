@@ -4,8 +4,11 @@ import ActionsArea from "./components/ActionsArea.vue";
 </script>
 
 <template>
-  <CountersArea />
-  <ActionsArea />
+
+  <div class="flex" style="display: flex; align-items: flex-start;">
+    <CountersArea />
+    <ActionsArea />
+  </div>
   </template>
 
 

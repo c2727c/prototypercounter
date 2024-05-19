@@ -27,6 +27,8 @@ export interface Counter {
   name: string;
   value: number;
   resetValue?: number;
+  minValue?: number;
+  maxValue?: number;
   readonly operations: Operation[];
 }
 
@@ -126,21 +128,41 @@ export const useCounterStore = defineStore("counterStore", () => {
     }
   }
 
-  function executeOperation(operation: Operation) {
+  function testOperation(operation: Operation) {
     const hostCounter = counters.value.find((counter) => counter.id === operation.hostCounter);
     const selectedCounter = counters.value.find((counter) => counter.id === operation.selectedCounter);
-    if (!hostCounter || !selectedCounter && !operation.isUseConstant) return;
+    if (!hostCounter || !selectedCounter && !operation.isUseConstant) return null;
     const newValue = operation.isUseConstant ? operation.constant : selectedCounter?.value || 0;
+    var result = 0;
     switch (operation.mathSign) {
       case "+":
-        hostCounter.value += newValue;
+        result = hostCounter.value + newValue;
         break;
       case "-":
-        hostCounter.value -= newValue;
+        result = hostCounter.value - newValue;
         break;
       case "=":
-        hostCounter.value = newValue;
+        result = newValue;
         break;
+    }
+    if (hostCounter.minValue !== undefined && result < hostCounter.minValue ||
+      hostCounter.maxValue !== undefined && result > hostCounter.maxValue) {
+      return null;
+    }
+    console.log("testOperation", operation, result);
+    return result;
+  }
+
+  function executeOperation(operation: Operation) {
+    const hostCounter = counters.value.find((counter) => counter.id === operation.hostCounter);
+    const result = testOperation(operation);
+    if (result !== null && hostCounter) {
+      hostCounter.value = result;
+      console.log("Operation success", operation);
+      return true;
+    } else {
+      console.log("Operation failed", operation);
+      return false;
     }
   }
 
@@ -159,6 +181,7 @@ export const useCounterStore = defineStore("counterStore", () => {
 
   function addAction() {
     const uniqueId = "A-" + generateUniqueId();
+    console.log("addAction", uniqueId);
     actions.value.push({
       id: uniqueId,
       name: "",
@@ -169,21 +192,42 @@ export const useCounterStore = defineStore("counterStore", () => {
 
   function deleteAction(actionId: string) {
     const actionIdx = actions.value.findIndex((action) => action.id === actionId);
+    console.log("deleteAction", actionId, actionIdx);
     if (actionIdx >= 0) {
       actions.value.splice(actionIdx, 1);
     }
   }
 
-  function executeAction(action: Action) {
-    action.operations.forEach((operation) => {
-      executeOperation(operation);
+  function getCountersSnapshot() {
+    return [...counters.value];
+  }
+
+  function recoverCountersSnapshot(snapshot: Counter[]) {
+    snapshot.forEach((counter) => {
+      const existingCounter = counters.value.find((c) => c.id === counter.id);
+      if (existingCounter) {
+        existingCounter.value = counter.value;
+      }
     });
+  }
+  function executeAction(action: Action) {
+    const snapshot = getCountersSnapshot();
+    for (let i = 0; i < action.operations.length; i++) {
+      const operationRet = executeOperation(action.operations[i]);
+      if (!operationRet) {
+        recoverCountersSnapshot(snapshot);
+        alert(`Action failed at operation ${i + 1} : ${action.operations[i].name}, reverting to the previous state.`);
+        return false;
+      }
+    }
+    return true;
   }
 
   setInterval(() => {
-    console.log(actions.value);
+    console.log(actions.value.map((action) => action.name+action.id)).join(", ");
+    // console.log(counters.value);
   }
-  , 5000);
+    , 5000);
 
   return {
     counters,
