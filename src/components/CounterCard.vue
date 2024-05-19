@@ -12,7 +12,7 @@
     <template #header>
       <div class="header">
         <Button @click="resetCounter" class="menu-button">↺</Button>
-        <div style="flex-grow: 1">Cnt</div>
+        <div style="flex-grow: 1"> </div>
         <Button @click="showMenu($event)" @click.stop class="menu-button">⋮</Button>
         <div>
           <div v-if="isMenuVisible" class="menu" :style="{ top: menuPosition.top, left: menuPosition.left }"
@@ -25,6 +25,7 @@
               Enable -1 <span v-if="isEnableMinusOne">√</span>
             </div>
             <div @click="addCustomOperation">Add custom operation</div>
+            <div @click="store.deleteCounter(storeCounter.id)">Delete Counter</div>
           </div>
           <Dialog v-model:visible="isEditAttributes" modal header="Edit Attributes" :style="{ width: '25rem' }">
             <div class="flex align-items-center gap-3 mb-3">
@@ -49,7 +50,11 @@
         <InputText id="countername" v-model="counterName" placeholder="Unnamed" />
         <Button @click="isEditName = false; storeCounter.name = counterName">💾</Button>
       </InputGroup>
-      <Button v-else @click="isEditName = true" severity="secondary">{{ counterName }} 📝</Button>
+      <Button 
+      
+      v-else @click="isEditName = true" severity="secondary">
+        <h1>{{ counterName }}</h1> 📝
+      </Button>
     </template>
     <template #content>
 
@@ -69,7 +74,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
-import { useCounterStore, Operation, Counter } from "../stores/counterStore";
+import { useCounterStore, Operation, Counter,MathSign } from "../stores/counterStore";
 import InputGroup from 'primevue/inputgroup';
 import Card from 'primevue/card';
 import InputNumber from 'primevue/inputnumber';
@@ -125,7 +130,7 @@ const isEnableMinusOne = ref(true);
 
 
 const resetCounter = () => {
-  storeCounter.value = originValue.value;
+  storeCounter.value = originValue.value || 0;
 };
 
 function addOnCounter(NumberToAdd: number) {
@@ -133,7 +138,7 @@ function addOnCounter(NumberToAdd: number) {
     id: "temporaray-id",
     hostCounter: storeCounter.id,
     name: `+(${NumberToAdd})`,
-    mathSign: "+",
+    mathSign: "+" as MathSign,
     isUseConstant: true,
     constant: NumberToAdd,
     selectedCounter: "",
@@ -199,6 +204,7 @@ onBeforeUnmount(() => {
   border: 1px solid #ccc;
   padding: 1em;
   margin: 1em 0;
+  width: 25em;
 }
 
 .header {
