@@ -17,9 +17,9 @@ export interface Operation {
   name: string;
   mathSign: MathSign;
   isUseConstant: boolean;
-  constant: number;
+  constant: number | undefined;
   readonly hostCounter: string;
-  selectedCounter: string;
+  selectedCounter: string | undefined;
 }
 
 export interface Counter {
@@ -119,12 +119,14 @@ export const useCounterStore = defineStore("counterStore", {
             name: "",
             mathSign: "+",
             isUseConstant: true,
-            constant: 3,
+            constant: undefined,
             hostCounter: counterId,
-            selectedCounter: counterId,
+            selectedCounter: undefined,
           }
         );
+        return operationId;
       }
+      return null;
     }
 
     function deleteOperation(counterId: string, operationId: string) {

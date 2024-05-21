@@ -1,5 +1,5 @@
 <template>
-    <Panel toggleable @update:collapsed="handdleUpdateCollapsed($event)">
+    <Panel toggleable @update:collapsed="handdleUpdateCollapsed($event)" :collapsed="!props.uncollapsed">
         <template #header>
             <div class="my-panel-header" style="width:100%;display:flex;">
             <div name="doable-name"
@@ -29,18 +29,18 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import Button from 'primevue/button';
-import FloatLabel from 'primevue/floatlabel';
 import InputText from 'primevue/inputtext';
 import Panel from 'primevue/panel';
 
 const props = defineProps<{
     doableName: string;
+    uncollapsed: boolean | undefined;
     updateCollapsed: (collapsed: boolean, newName: string) => void;
 }>();
 
 //hard copy the values from the store
 const newName = ref("");
-const allowDo = ref(false);
+const allowDo = ref(!props.uncollapsed);
 
 const handdleUpdateCollapsed = (collapsed: boolean) => {
     if (collapsed) {

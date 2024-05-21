@@ -1,7 +1,9 @@
 <template>
   <DoPanel 
     style="width: 16em;"
-    :doableName="displayName" :updateCollapsed="handdleUpdateCollapsed"
+    :doableName="displayName" 
+    :updateCollapsed="handdleUpdateCollapsed"
+    :uncollapsed="isUndefined"
     @execute-do="$emit('execute-operation', operation)" @execute-delete="$emit('delete-operation', operation.id)">
       <InputGroup>
         <Dropdown style="max-width:2.2em;min-width:2.2em;"
@@ -29,7 +31,6 @@
 import { ref, computed } from "vue";
 import Dropdown from 'primevue/dropdown';
 import InputGroup from 'primevue/inputgroup';
-import InputGroupAddon from 'primevue/inputgroupaddon';
 import InputNumber from 'primevue/inputnumber';
 import Button from 'primevue/button';
 import DoPanel from "./DoPanel.vue";
@@ -45,6 +46,7 @@ const props = defineProps<{
 }>();
 
 const storeOperation = props.operation;
+const isUndefined = storeOperation.constant === undefined && storeOperation.selectedCounter === undefined;
 const operation = ref(storeOperation);
 const store = useCounterStore();
 const allCounters = computed(() => store.counters);
@@ -76,7 +78,10 @@ const updateStore = (newName: string) => {
 
 const handdleUpdateCollapsed = (collapsed: boolean, newName: string) => {
   if (collapsed) {
-    console.log("collapsed!!!");
+    // delete if empty
+    if(isUndefined){
+      store.deleteOperation(storeOperation.hostCounter, storeOperation.id);
+    }
     updateStore(newName);
   }
 };

@@ -1,13 +1,14 @@
 <template>
-  <DoPanel style="width: 32em;" class="action-card" :doableName="displayName" :updateCollapsed="handdleUpdateCollapsed"
+  <DoPanel style="width: 32em;" class="action-card" 
+  :doableName="displayName" 
+  :updateCollapsed="handdleUpdateCollapsed"
+  :uncollapsed="props.action.operations.length === 0"
     @execute-do="doAction" @execute-delete="deleteAction">
       <div v-for="(operation, index) in editOperations" :key="index">
         <OperationSelectionCard :selectedOperation="operation" :index="index"
           @update:selectedOperation="updateOperation" @delete="editOperations.splice(index, 1)" />
       </div>
-      <template #footer>
-        <Button label="Add Operation" @click="addOperation" />
-      </template>
+      <Button label="Add Operation" @click="addOperation" />
   </DoPanel>
 
 </template>
