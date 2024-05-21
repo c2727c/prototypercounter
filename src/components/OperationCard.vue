@@ -78,8 +78,9 @@ const updateStore = (newName: string) => {
 
 const handdleUpdateCollapsed = (collapsed: boolean, newName: string) => {
   if (collapsed) {
-    // delete if empty
-    if(isUndefined){
+    // delete if not valid
+    if(newIsUseConstant.value && newConstant.value === undefined ||
+      !newIsUseConstant.value && newSelectedCounter.value === undefined) {
       store.deleteOperation(storeOperation.hostCounter, storeOperation.id);
     }
     updateStore(newName);

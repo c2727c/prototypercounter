@@ -143,7 +143,7 @@ export const useCounterStore = defineStore("counterStore", {
       const hostCounter = counters.value.find((counter) => counter.id === operation.hostCounter);
       const selectedCounter = counters.value.find((counter) => counter.id === operation.selectedCounter);
       if (!hostCounter || !selectedCounter && !operation.isUseConstant) return null;
-      const newValue = operation.isUseConstant ? operation.constant : selectedCounter?.value || 0;
+      const newValue = operation.isUseConstant ? ( operation.constant ||0 ) : (selectedCounter?.value || 0);
       var result = 0;
       switch (operation.mathSign) {
         case "+":
@@ -209,11 +209,8 @@ export const useCounterStore = defineStore("counterStore", {
       }
     }
 
-    function getCountersSnapshot() {
-      return [...counters.value];
-    }
 
-    function recoverCountersSnapshot(snapshot: Counter[]) {
+    function recoverCountersSnapshot(snapshot: { id: string, value: number }[]) {
       snapshot.forEach((counter) => {
         const existingCounter = counters.value.find((c) => c.id === counter.id);
         if (existingCounter) {
@@ -221,8 +218,9 @@ export const useCounterStore = defineStore("counterStore", {
         }
       });
     }
+
     function executeAction(action: Action) {
-      const snapshot = getCountersSnapshot();
+      const snapshot = counters.value.map((counter) => ({ id: counter.id, value: counter.value }));
       for (let i = 0; i < action.operations.length; i++) {
         const operationRet = executeOperation(action.operations[i]);
         if (!operationRet) {
