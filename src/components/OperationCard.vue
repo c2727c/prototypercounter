@@ -5,24 +5,34 @@
     :updateCollapsed="handdleUpdateCollapsed"
     :uncollapsed="isUndefined"
     @execute-do="$emit('execute-operation', operation)" @execute-delete="$emit('delete-operation', operation.id)">
-      <InputGroup>
-        <Dropdown style="max-width:2.2em;min-width:2.2em;"
+      <div style="display:flex;justify-content:left;align-items:center;">
+      <InputGroup
+      style="max-width: 4.5em"
+      >
+        <Dropdown
         v-model="newMathSign" :options="allowedMathSigns.slice()"/>
         <Button 
         size="small"
-        style="max-width:4em;min-width:3em;padding:0.2em;"
-        :label="newIsUseConstant ? 'Num' : 'Cnt'" 
+        style="padding:0.5em;min-width:2.5em;"
+        :label="newIsUseConstant ? 'N' : 'C'" 
         :severity="newIsUseConstant ? 'primary' : 'warning'"
         @click="newIsUseConstant = !newIsUseConstant" />
+      </InputGroup>
+      <span name="number-or-counter">
         <InputNumber 
         v-if="newIsUseConstant" 
+        :pt="{ input: { root: { style: 'width: 100%', class: 'text-center' } } }"
         v-model="newConstant" 
         mode="decimal"
-          showButtons />
-        <Dropdown v-else 
+        showButtons
+        />
+        <Dropdown v-if="!newIsUseConstant" 
+        :pt="{ input: { root: { style: 'width: 100%', class: 'text-center' } } }"
           v-model="newSelectedCounter" editable :options="allCounters" optionLabel="name"
           optionValue="id" placeholder="Select a Counter"/>
-      </InputGroup>
+      </span>
+      </div>
+      
   </DoPanel>
 
 </template>

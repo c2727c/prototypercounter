@@ -74,12 +74,12 @@ const storeCounter = props.counter; // use this to manipulate the value in the s
 // local refs that are related to the storeCounter
 const counterName = ref(storeCounter.name);
 const renderedOperations = ref<Operation[]>(storeCounter.operations);
-const minValue = ref(storeCounter.minValue || null);
-const maxValue = ref(storeCounter.minValue || null);
-const originValue = ref(storeCounter.resetValue || null);
+const minValue = ref(storeCounter.minValue);
+const maxValue = ref(storeCounter.maxValue);
+const originValue = ref(storeCounter.resetValue);
 
 watch(minValue, (newVal) => {
-  if (newVal !== null) {
+  if (newVal !== null && newVal !== undefined) {
     storeCounter.minValue = newVal;
     if (storeCounter.value < newVal) {
       storeCounter.value = newVal;
@@ -87,7 +87,7 @@ watch(minValue, (newVal) => {
   }
 });
 watch(maxValue, (newVal) => {
-  if (newVal !== null) {
+  if (newVal !== null && newVal !== undefined) {
     storeCounter.maxValue = newVal;
     if (storeCounter.value > newVal) {
       storeCounter.value = newVal;
@@ -105,7 +105,6 @@ watch(originValue, (newVal) => {
 
 const isEditName = ref(false);
 const isEditAttributes = ref(false);
-const menuPosition = ref({ top: "0px", left: "0px" });
 const isEnablePlusOne = ref(true);
 const isEnableMinusOne = ref(true);
 
