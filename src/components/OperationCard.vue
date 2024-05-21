@@ -1,7 +1,7 @@
 <template>
   <DoPanel 
     style="width: 16em;"
-    :doableName="displayName" 
+    :doableName="displayName"
     :updateCollapsed="handdleUpdateCollapsed"
     :uncollapsed="isUndefined"
     @execute-do="$emit('execute-operation', operation)" @execute-delete="$emit('delete-operation', operation.id)">

@@ -9,7 +9,7 @@
                 id="operationname" 
                 size="small"
                 v-model="newName" 
-                :placeholder="`...${props.doableName}`" />
+                :placeholder="`${props.doableName} ...rename it here!`" />
             <Button 
             style="width:100%;"
             size="small"
