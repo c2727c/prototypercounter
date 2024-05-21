@@ -232,11 +232,11 @@ export const useCounterStore = defineStore("counterStore", {
       return true;
     }
 
-    setInterval(() => {
-      console.log(actions.value.map((action) => action.name + action.id)).join(", ");
-      // console.log(counters.value);
-    }
-      , 5000);
+    // setInterval(() => {
+    //   console.log(actions.value.map((action) => action.name + action.id)).join(", ");
+    //   // console.log(counters.value);
+    // }
+    //   , 5000);
 
     return {
       counters,

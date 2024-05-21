@@ -12,75 +12,57 @@
     <template #header>
       <div class="header">
         <Button @click="resetCounter" class="menu-button">↺</Button>
-        <div style="flex-grow: 1"> </div>
-        <Button @click="showMenu($event)" @click.stop class="menu-button">⋮</Button>
         <div>
-          <div v-if="isMenuVisible" class="menu" :style="{ top: menuPosition.top, left: menuPosition.left }"
-            @click.stop>
-            <div @click="editAttributes">Edit Attributes</div>
-            <div @click="toggleEnablePlusOne">
-              Enable +1 <span v-if="isEnablePlusOne">√</span>
-            </div>
-            <div @click="toggleEnableMinusOne">
-              Enable -1 <span v-if="isEnableMinusOne">√</span>
-            </div>
-            <div @click="addCustomOperation">Add custom operation</div>
-            <div @click="store.deleteCounter(storeCounter.id)">Delete Counter</div>
-          </div>
-          <Dialog v-model:visible="isEditAttributes" modal header="Edit Attributes" :style="{ width: '25rem' }">
-            <div class="flex align-items-center gap-3 mb-3">
-              <label for="minvalue" class="font-semibold w-6rem">Min</label>
-              <InputNumber id="minvalue" class="flex-auto" autocomplete="off" v-model="minValue" placeholder="-∞" />
-            </div>
-            <div class="flex align-items-center gap-3 mb-5">
-              <label for="maxvalue" class="font-semibold w-6rem">Max</label>
-              <InputNumber id="maxvalue" class="flex-auto" autocomplete="off" v-model="maxValue" placeholder="+∞" />
-            </div>
-            <div class="flex align-items-center gap-3 mb-5">
-              <label for="originvalue" class="font-semibold w-6rem">Reset Value</label>
-              <InputNumber id="originvalue" class="flex-auto" autocomplete="off" v-model="originValue"
-                placeholder="0" />
-            </div>
-          </Dialog>
+          <InputGroup v-if="isEditName">
+            <InputText id="countername" v-model="counterName" placeholder="Unnamed" />
+            <Button @click="isEditName = false; storeCounter.name = counterName">💾</Button>
+          </InputGroup>
+          <Button v-else @click="isEditName = true" severity="secondary">
+            {{ counterName }} 📝
+          </Button>
         </div>
+        <Button @click="showMenu($event)" @click.stop class="menu-button">⋮</Button>
       </div>
+      <Menu ref="menu" id="overlay_menu" :model="menuitems" :popup="true" />
+      <Dialog v-model:visible="isEditAttributes" modal header="Edit Attributes" :style="{ width: '25rem' }">
+        <div class="flex align-items-center gap-3 mb-3">
+          <label for="minvalue" class="font-semibold w-6rem">Min</label>
+          <InputNumber id="minvalue" class="flex-auto" autocomplete="off" v-model="minValue" placeholder="-∞" />
+        </div>
+        <div class="flex align-items-center gap-3 mb-5">
+          <label for="maxvalue" class="font-semibold w-6rem">Max</label>
+          <InputNumber id="maxvalue" class="flex-auto" autocomplete="off" v-model="maxValue" placeholder="+∞" />
+        </div>
+        <div class="flex align-items-center gap-3 mb-5">
+          <label for="originvalue" class="font-semibold w-6rem">Reset Value</label>
+          <InputNumber id="originvalue" class="flex-auto" autocomplete="off" v-model="originValue" placeholder="0" />
+        </div>
+      </Dialog>
     </template>
     <template #title>
-      <InputGroup v-if="isEditName" class="w-full md:w-30rem">
-        <InputText id="countername" v-model="counterName" placeholder="Unnamed" />
-        <Button @click="isEditName = false; storeCounter.name = counterName">💾</Button>
-      </InputGroup>
-      <Button 
-      
-      v-else @click="isEditName = true" severity="secondary">
-        <h1>{{ counterName }}</h1> 📝
-      </Button>
-    </template>
-    <template #content>
-
-
       <div class="count-container">
         <Button rounded v-visible="isEnableMinusOne" @click="addOnCounter(-1)">-</Button>
         <span class="count">{{ storeCounter.value }}</span>
         <Button rounded v-visible="isEnablePlusOne" @click="addOnCounter(1)">+</Button>
       </div>
-      <div>
-        <OperationCard v-for="(operation, index) in renderedOperations" :key="index" :hostCounterName="counterName"
-          :operation="operation" @execute-operation="executeOperation" @delete-operation="deleteOperation" />
-      </div>
+    </template>
+    <template #content>
+      <OperationCard v-for="(operation, index) in renderedOperations" :key="index" :hostCounterName="counterName"
+        :operation="operation" @execute-operation="executeOperation" @delete-operation="deleteOperation" />
     </template>
   </Card>
 </template>
 
 <script setup lang="ts">
 import { ref, watch, computed } from "vue";
-import { useCounterStore, Operation, Counter,MathSign } from "../stores/counterStore";
+import { useCounterStore, Operation, Counter, MathSign } from "../stores/counterStore";
 import InputGroup from 'primevue/inputgroup';
 import Card from 'primevue/card';
 import InputNumber from 'primevue/inputnumber';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
+import Menu from 'primevue/menu';
 
 import OperationCard from "./OperationCard.vue";
 
@@ -123,7 +105,6 @@ watch(originValue, (newVal) => {
 
 const isEditName = ref(false);
 const isEditAttributes = ref(false);
-const isMenuVisible = ref(false);
 const menuPosition = ref({ top: "0px", left: "0px" });
 const isEnablePlusOne = ref(true);
 const isEnableMinusOne = ref(true);
@@ -151,52 +132,42 @@ function executeOperation(operation: Operation) {
 }
 
 // menu
-import { onMounted, onBeforeUnmount } from "vue";
-
+const menu = ref();
 const showMenu = (event: MouseEvent) => {
-  isMenuVisible.value = true;
-  menuPosition.value = {
-    top: `${event.clientY}px`,
-    left: `${event.clientX}px`,
-  };
+  menu.value.toggle(event);
 };
+const menuitems = [
+  {
+    label: "Edit Attributes",
+    icon: "pi pi-fw pi-pencil",
+    command: () => isEditAttributes.value = true,
+  },
+  {
+    label: "Toggle +1",
+    icon: "pi pi-fw pi-plus",
+    command: ()=> isEnablePlusOne.value = !isEnablePlusOne.value,
+  },
+  {
+    label: "Toggle -1",
+    icon: "pi pi-fw pi-minus",
+    command: ()=> isEnableMinusOne.value = !isEnableMinusOne.value,
+  },
+  {
+    label: "Add custom operation",
+    icon: "pi pi-fw pi-plus-circle",
+    command: ()=> store.addOperation(storeCounter.id),
+  },
+  {
+    label: "Delete Counter",
+    icon: "pi pi-fw pi-trash",
+    command: () => store.deleteCounter(storeCounter.id),
+  },
+];
 
-const editAttributes = () => {
-  isEditAttributes.value = true;
-  isMenuVisible.value = false;
-};
-
-const toggleEnablePlusOne = () => {
-  isEnablePlusOne.value = !isEnablePlusOne.value;
-  isMenuVisible.value = false;
-};
-
-const toggleEnableMinusOne = () => {
-  isEnableMinusOne.value = !isEnableMinusOne.value;
-  isMenuVisible.value = false;
-};
-
-function addCustomOperation() {
-  isMenuVisible.value = false;
-  // TODO : collapse all other operations
-  store.addOperation(storeCounter.id);
-}
 
 function deleteOperation(operationId: string) {
   store.deleteOperation(storeCounter.id, operationId);
 }
-
-const handleDocumentClick = (event: MouseEvent) => {
-  if (isMenuVisible.value) isMenuVisible.value = false;
-};
-
-onMounted(() => {
-  document.addEventListener("click", handleDocumentClick);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleDocumentClick);
-});
 </script>
 
 <style scoped>
@@ -204,16 +175,13 @@ onBeforeUnmount(() => {
   border: 1px solid #ccc;
   padding: 1em;
   margin: 1em 0;
-  width: 25em;
 }
 
 .header {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
 }
-
-.menu-button {}
 
 .menu {
   position: absolute;
@@ -234,16 +202,16 @@ onBeforeUnmount(() => {
 }
 
 .count-container {
+  min-height: 3em;
+  font-size: 2em;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 5px;
-  /* Adjust as needed */
 }
 
 .count {
   font-size: 1.5em;
   margin: 0 10px;
-  /* Adjust as needed */
 }
 </style>

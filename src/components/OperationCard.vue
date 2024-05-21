@@ -1,18 +1,24 @@
 <template>
   <DoPanel 
-    style="width: 20em;"
+    style="width: 16em;"
     :doableName="displayName" :updateCollapsed="handdleUpdateCollapsed"
     @execute-do="$emit('execute-operation', operation)" @execute-delete="$emit('delete-operation', operation.id)">
-      <InputGroup style="height: 3em; width: 18em;line-height: 1.8em;">
-        <Dropdown style="max-width:4em;"
+      <InputGroup>
+        <Dropdown style="max-width:2.2em;min-width:2.2em;"
         v-model="newMathSign" :options="allowedMathSigns.slice()"/>
-        <InputGroupAddon>
-          <Button :label="newIsUseConstant ? 'Num' : 'Cnt'" :severity="newIsUseConstant ? 'primary' : 'warning'"
-            @click="newIsUseConstant = !newIsUseConstant" />
-        </InputGroupAddon>
-        <InputNumber v-if="newIsUseConstant" v-model="newConstant" mode="decimal"
+        <Button 
+        size="small"
+        style="max-width:4em;min-width:3em;padding:0.2em;"
+        :label="newIsUseConstant ? 'Num' : 'Cnt'" 
+        :severity="newIsUseConstant ? 'primary' : 'warning'"
+        @click="newIsUseConstant = !newIsUseConstant" />
+        <InputNumber 
+        v-if="newIsUseConstant" 
+        v-model="newConstant" 
+        mode="decimal"
           showButtons />
-        <Dropdown v-else v-model="newSelectedCounter" editable :options="allCounters" optionLabel="name"
+        <Dropdown v-else 
+          v-model="newSelectedCounter" editable :options="allCounters" optionLabel="name"
           optionValue="id" placeholder="Select a Counter"/>
       </InputGroup>
   </DoPanel>

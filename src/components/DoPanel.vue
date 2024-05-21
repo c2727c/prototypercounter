@@ -1,13 +1,18 @@
 <template>
     <Panel toggleable @update:collapsed="handdleUpdateCollapsed($event)">
         <template #header>
-            <div
-            style="position: relative; display: flex; justify-content: space-between; align-items: center;width:auto;min-width: 12em;   ">
+            <div class="my-panel-header" style="width:100%;display:flex;">
+            <div name="doable-name"
+            style="position: relative; width: 100%; ">
             <InputText  v-if="!allowDo"  
-                style="position: absolute; width: 98%; top: 0;left: 0; margin: 0.2em; z-index: 1;"
-                id="operationname" v-model="newName" placeholder="Rename this item..." />
+                style="position: absolute; width: 96%; top: 0; margin: 0.2em; z-index: 1;"
+                id="operationname" 
+                size="small"
+                v-model="newName" 
+                :placeholder="`...${props.doableName}`" />
             <Button 
-            style="width:100%;font-size: 120%;"
+            style="width:100%;"
+            size="small"
             @click="$emit('execute-do')" 
             :disabled="!allowDo">🔨
                 {{ props.doableName }}
@@ -15,11 +20,9 @@
             </div>
             <Button v-if="!allowDo" @click="$emit('execute-delete')" severity="danger" text rounded label="🗑️"
                 size="small" />
+            </div>
         </template>
         <slot></slot>
-        <template #footer>
-            <slot name="footer"></slot>
-        </template>
     </Panel>
 </template>
 
