@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "grid-layout-plus": "^1.0.5",
     "pinia": "2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
     "primevue": "^3.52.0",
